@@ -4,8 +4,12 @@ import React, { useState, useEffect } from 'react';
 const App = () => {
   // State to store text input
   const [textInput, setTextInput] = useState('');
+  // State to store the name for text upload
+  const [textName, setTextName] = useState('');
   // State to store the selected file
   const [selectedFile, setSelectedFile] = useState(null);
+  // State to store the name for file upload
+  const [fileNameInput, setFileNameInput] = useState('');
   // State to store uploaded items (text and file names)
   const [uploadedItems, setUploadedItems] = useState([]);
   // State for loading indicator
@@ -46,27 +50,37 @@ const App = () => {
     setTextInput(e.target.value);
   };
 
+  // Handler for text name input changes
+  const handleTextNameChange = (e) => {
+    setTextName(e.target.value);
+  };
+
   // Handler for file input changes
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
+  // Handler for file name input changes
+  const handleFileNameInputChange = (e) => {
+    setFileNameInput(e.target.value);
+  };
+
   // Handler for text upload
   const handleTextUpload = async () => {
-    if (!textInput.trim()) {
-      setMessage('Text field cannot be empty.');
+    if (!textInput.trim() || !textName.trim()) {
+      setMessage('Name and text content are required.');
       return;
     }
     setIsLoading(true);
     setMessage('');
     try {
       // Replace with your actual backend URL
-      const response = await fetch('http://localhost:5000/api/text', {
+      const response = await fetch('http://localhost:5000/api/items/text', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content: textInput }),
+        body: JSON.stringify({ name: textName, content: textInput }),
       });
 
       if (!response.ok) {
@@ -76,7 +90,8 @@ const App = () => {
 
       const result = await response.json();
       setMessage(result.message || 'Text uploaded successfully!');
-      setTextInput(''); // Clear input
+      setTextInput(''); // Clear text input
+      setTextName(''); // Clear name input
       fetchUploadedItems(); // Refresh the list
     } catch (error) {
       console.error('Error uploading text:', error);
@@ -89,19 +104,20 @@ const App = () => {
 
   // Handler for file upload
   const handleFileUpload = async () => {
-    if (!selectedFile) {
-      setMessage('Please select a file to upload.');
+    if (!selectedFile || !fileNameInput.trim()) {
+      setMessage('Name and a file are required.');
       return;
     }
     setIsLoading(true);
     setMessage('');
-    // Create FormData to send file
+    // Create FormData to send file and name
     const formData = new FormData();
+    formData.append('name', fileNameInput); // Append the name
     formData.append('file', selectedFile);
 
     try {
       // Replace with your actual backend URL
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch('http://localhost:5000/api/items/file', {
         method: 'POST',
         body: formData, // No Content-Type header needed for FormData
       });
@@ -114,6 +130,7 @@ const App = () => {
       const result = await response.json();
       setMessage(result.message || 'File uploaded successfully!');
       setSelectedFile(null); // Clear selected file
+      setFileNameInput(''); // Clear name input
       // Reset file input value
       document.getElementById('file-input').value = '';
       fetchUploadedItems(); // Refresh the list
@@ -145,6 +162,13 @@ const App = () => {
         {/* Text Upload Section */}
         <div className="mb-8 p-6 border border-gray-200 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">Upload Text</h2>
+          <input
+            type="text"
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
+            placeholder="Enter a name for your text"
+            value={textName}
+            onChange={handleTextNameChange}
+          />
           <textarea
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out resize-y min-h-[100px]"
             placeholder="Enter your text here..."
@@ -163,6 +187,13 @@ const App = () => {
         {/* File Upload Section */}
         <div className="mb-8 p-6 border border-gray-200 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">Upload File</h2>
+          <input
+            type="text"
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
+            placeholder="Enter a name for your file"
+            value={fileNameInput}
+            onChange={handleFileNameInputChange}
+          />
           <input
             id="file-input"
             type="file"
@@ -192,15 +223,18 @@ const App = () => {
             <ul className="space-y-3">
               {uploadedItems.map((item) => (
                 <li key={item._id} className="p-4 bg-gray-50 rounded-md border border-gray-100 flex items-center justify-between">
-                  {item.type === 'text' ? (
-                    <span className="text-gray-800 flex-grow break-all pr-4">
-                      <span className="font-semibold text-blue-600">[Text]</span> {item.content}
-                    </span>
-                  ) : (
-                    <span className="text-gray-800 flex-grow break-all pr-4">
-                      <span className="font-semibold text-teal-600">[File]</span> {item.fileName}
-                    </span>
-                  )}
+                  <div className="flex-grow break-all pr-4">
+                    <span className="font-semibold text-gray-700">{item.name}</span> - {' '}
+                    {item.type === 'text' ? (
+                      <span className="text-gray-800">
+                        <span className="font-semibold text-blue-600">[Text]</span> {item.content}
+                      </span>
+                    ) : (
+                      <span className="text-gray-800">
+                        <span className="font-semibold text-teal-600">[File]</span> {item.fileName}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-sm text-gray-500">{new Date(item.uploadedAt).toLocaleString()}</span>
                 </li>
               ))}
