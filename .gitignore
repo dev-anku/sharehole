@@ -1,3 +1,6 @@
+# uploads directory
+./server/uploads
+
 # Logs
 logs
 *.log
