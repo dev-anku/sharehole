@@ -1,5 +1,87 @@
 import React, { useState, useEffect } from "react";
 
+const Message = ({ message }) => {
+  return (
+    <>
+      {message && (
+        <div className={`p-3 mb-4 rounded-md text-center ${message.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {message}
+        </div>
+      )}
+    </>
+  )
+}
+
+const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) => {
+  const [fileName, setFileName] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  async function handleFileUpload() {
+    if (!selectedFile || !fileName.trim()) {
+      setMessage("Name and file are required for uploading.");
+      return;
+    }
+    setLoading(true);
+    setMessage('');
+
+    const formData = new FormData();
+    formData.append('name', fileName);
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch('http://localhost:5173/api/items/file', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown server error' }));
+        throw new Error(`HTTP error! status: ${response.status}. ${errorData.message || ''}`);
+      }
+
+      const result = await response.json();
+      setMessage(result.message || "File uploaded successfully.");
+      setSelectedFile(null);
+      setFileName('');
+      document.getElementById('file-input').value = '';
+      fetchUploadedItems();
+    } catch (error) {
+      console.error("Error uploading file: ", error);
+      setMessage('Failed to upload file. Please ensure the backend server is running and accessible at http://localhost:5000.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (<div className="mb-8 p-6 border border-gray-200 rounded-lg shadow-sm">
+    <h2 className="text-2xl font-semibold text-gray-700 mb-4">Upload File</h2>
+    <input
+      type="text"
+      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
+      placeholder="Enter a name for your file"
+      value={fileName}
+      onChange={(e) => setSelectedFile(e.target.files[0])}
+    />
+    <input
+      id="file-input"
+      type="file"
+      onChange={(e) => setSelectedFile(e.target.files[0])}
+      className="w-full p-3 border border-gray-300 rounded-md bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+    />
+    {selectedFile && (
+      <p className="text-sm text-gray-600 mt-2">Selected file: <span className="font-medium">{selectedFile.name}</span></p>
+    )}
+    <button
+      onClick={handleFileUpload}
+      className="mt-4 w-full bg-gradient-to-r from-teal-500 to-green-600 text-white py-3 px-6 rounded-md shadow-lg hover:from-teal-600 hover:to-green-700 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+      disabled={isLoading}
+    >
+      {isLoading ? 'Uploading...' : 'Upload File'}
+    </button>
+  </div>
+  );
+}
+
 const TextUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) => {
   const [textContent, setTextContent] = useState("");
   const [textName, setTextName] = useState("");
@@ -135,10 +217,19 @@ const HomePage = () => {
   }, []);
 
   return (
-    <>
-      <TextUpload setMessage={setMessage} isLoading={isLoading} setLoading={setLoading} fetchUploadedItems={fetchUploadedItems} />
-      <UploadedItemsList uploadedItems={uploadedItems} isLoading={isLoading} />
-    </>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
+      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-500">
+            Content Uploader
+          </span>
+        </h1>
+        <Message message={message} />
+        <TextUpload setMessage={setMessage} isLoading={isLoading} setLoading={setLoading} fetchUploadedItems={fetchUploadedItems} />
+        <FileUpload setMessage={setMessage} isLoading={isLoading} setLoading={setLoading} fetchUploadedItems={fetchUploadedItems} />
+        <UploadedItemsList uploadedItems={uploadedItems} isLoading={isLoading} />
+      </div>
+    </div>
   )
 }
 
