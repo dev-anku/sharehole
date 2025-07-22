@@ -58,3 +58,28 @@ exports.file_uploader = async (req, res) => {
     res.status(500).json({ message: "Server error during file upload." });
   }
 };
+
+exports.item_delete_get = async (req, res) => {
+  try {
+    const item = await Item.find(req.params.id).exec();
+    if (item === null) {
+      res.redirect("/");
+    }
+    res.status(200).json(item);
+  } catch (error) {
+    console.error("Error deleting item: ", error);
+    res.status(500).json({ message: "Server error fetching items." });
+  }
+};
+
+exports.item_delete_post = async (req, res) => {
+  try {
+    const item = await Item.find(req.params.id).exec(); 
+
+    await Item.findByIdAndDelete(req.body.id);
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error deleting item: ", error);
+    res.status(500).json({ message: "Server error deleting items." });
+  }
+};

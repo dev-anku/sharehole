@@ -29,7 +29,7 @@ const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
     formData.append('file', selectedFile);
 
     try {
-      const response = await fetch('http://localhost:5173/api/items/file', {
+      const response = await fetch('http://localhost:5000/api/items/file', {
         method: 'POST',
         body: formData,
       });
@@ -60,7 +60,7 @@ const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
       className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
       placeholder="Enter a name for your file"
       value={fileName}
-      onChange={(e) => setSelectedFile(e.target.files[0])}
+      onChange={(e) => setFileName(e.target.value)}
     />
     <input
       id="file-input"
@@ -148,6 +148,10 @@ const TextUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
 }
 
 const UploadedItemsList = ({ uploadedItems, isLoading }) => {
+  function handleItemDelete() {
+    console.log("Item delete");
+  }
+
   return (
     <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
       <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your Uploaded Items</h2>
@@ -160,33 +164,42 @@ const UploadedItemsList = ({ uploadedItems, isLoading }) => {
           {uploadedItems.map((item) => (
             <li key={item._id} className="p-4 bg-gray-50 rounded-md border border-gray-100 flex items-center justify-between">
               <div className="flex-grow break-all pr-4">
-                <span className="font-semibold text-gray-700">{item.name}</span> {' '}
+                <span className="font-semibold text-gray-700">{item.name}</span><br />
                 {item.type === 'text' ? (
                   <span className="text-gray-800">
                     <span className="font-semibold text-blue-600">[Text]</span> {item.content}
                   </span>
                 ) : (
-                  <span className="text-gray-800 flex items-center">
-                    <span className="font-semibold text-teal-600">[File]</span> {item.fileName}
+                  <span className="text-gray-800 flex justify-between items-center">
+                    <span>
+                      <span className="font-semibold text-teal-600">[File]</span> {item.fileName}
+                    </span>
                     {/* Add download link for files */}
-                    <a
-                      href={`http://localhost:5000/${item.filePath}`} // Construct the full URL to the file
-                      download // The 'download' attribute prompts the browser to download the file
-                      className="ml-3 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200 flex items-center"
-                      target="_blank" // Open in a new tab
-                      rel="noopener noreferrer" // Security best practice for target="_blank"
-                    >
-                      Download
-                    </a>
                   </span>
                 )}
+                {item.type === 'file' && (
+                  <a
+                    href={`http://localhost:5000/${item.filePath}`} // Construct the full URL to the file
+                    download // The 'download' attribute prompts the browser to download the file
+                  >
+                    <button
+                      download
+                      className="ml-3 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200 flex items-center"
+                    >
+                      Download
+                    </button>
+                  </a>
+                )}
+                < button className="ml-3 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200 flex items-center" onClick={handleItemDelete}>
+                  Delete
+                </button>
               </div>
-              <span className="text-sm text-gray-500">{new Date(item.uploadedAt).toLocaleString()}</span>
             </li>
           ))}
         </ul>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
 
