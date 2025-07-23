@@ -4,7 +4,7 @@ const Message = ({ message }) => {
   return (
     <div>
       {message && (
-        <div className={`p-3 mb-4 rounded-md text-center ${message.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <div className={`p-3 mb-4 rounded-md text-center ${message.includes('successfully') ? 'bg-green-800 text-green-100' : 'bg-red-800 text-red-100'}`}>
           {message}
         </div>
       )}
@@ -53,11 +53,11 @@ const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
     }
   }
 
-  return (<div className="mb-8 p-6 border border-gray-200 rounded-lg shadow-sm">
-    <h2 className="text-2xl font-semibold text-gray-700 mb-4">Upload File</h2>
+  return (<div className="mb-8 p-6 border border-gray-700 rounded-lg shadow-sm bg-gray-900">
+    <h2 className="text-2xl font-semibold text-gray-100 mb-4">Upload File</h2>
     <input
       type="text"
-      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
+      className="w-full p-3 border border-gray-700 rounded-md bg-gray-800 text-white focus:ring-2 focus:ring-teal-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
       placeholder="Enter a name for your file"
       value={fileName}
       onChange={(e) => setFileName(e.target.value)}
@@ -66,14 +66,14 @@ const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
       id="file-input"
       type="file"
       onChange={(e) => setSelectedFile(e.target.files[0])}
-      className="w-full p-3 border border-gray-300 rounded-md bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+      className="w-full p-3 border border-gray-700 rounded-md bg-gray-800 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-300 hover:file:bg-blue-800 cursor-pointer"
     />
     {selectedFile && (
-      <p className="text-sm text-gray-600 mt-2">Selected file: <span className="font-medium">{selectedFile.name}</span></p>
+      <p className="text-sm text-gray-400 mt-2">Selected file: <span className="font-medium text-gray-200">{selectedFile.name}</span></p>
     )}
     <button
       onClick={handleFileUpload}
-      className="mt-4 w-full bg-gradient-to-r from-teal-500 to-green-600 text-white py-3 px-6 rounded-md shadow-lg hover:from-teal-600 hover:to-green-700 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="mt-4 w-full bg-gradient-to-r from-teal-700 to-green-800 text-white py-3 px-6 rounded-md shadow-lg hover:from-teal-600 hover:to-green-700 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
       disabled={isLoading}
     >
       {isLoading ? 'Uploading...' : 'Upload File'}
@@ -121,24 +121,24 @@ const TextUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
   };
 
   return (
-    <div className="mb-8 p-6 border border-gray-200 rounded-lg shadow-sm">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Upload Text</h2>
+    <div className="mb-8 p-6 border border-gray-700 rounded-lg shadow-sm bg-gray-900">
+      <h2 className="text-2xl font-semibold text-gray-100 mb-4">Upload Text</h2>
       <input
         type="text"
-        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
+        className="w-full p-3 border border-gray-700 rounded-md bg-gray-800 text-white focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out mb-4"
         placeholder="Enter a name for your text"
         value={textName}
         onChange={(e) => setTextName(e.target.value)}
       />
       <textarea
-        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out resize-y min-h-[100px]"
+        className="w-full p-3 border border-gray-700 rounded-md bg-gray-800 text-white focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out resize-y min-h-[100px]"
         placeholder="Enter your text here..."
         value={textContent}
         onChange={(e) => setTextContent(e.target.value)}
       ></textarea>
       <button
         onClick={handleTextUpload}
-        className="mt-4 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 px-6 rounded-md shadow-lg hover:from-blue-600 hover:to-indigo-700 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-4 w-full bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-3 px-6 rounded-md shadow-lg hover:from-blue-600 hover:to-indigo-700 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={isLoading}
       >
         {isLoading ? 'Uploading...' : 'Upload Text'}
@@ -173,70 +173,80 @@ const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, f
   }
 
   return (
-    <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your Uploaded Items</h2>
+    <div className="p-6 border border-gray-700 rounded-lg shadow-sm bg-gray-900">
+      <h2 className="text-2xl font-semibold text-gray-100 mb-4">Your Uploaded Items</h2>
       {isLoading && uploadedItems.length === 0 ? (
-        <p className="text-gray-500 text-center">Loading items...</p>
+        <p className="text-gray-400 text-center">Loading items...</p>
       ) : uploadedItems.length === 0 ? (
-        <p className="text-gray-500 text-center">No items uploaded yet.</p>
+        <p className="text-gray-400 text-center">No items uploaded yet.</p>
       ) : (
         <ul className="space-y-3">
           {uploadedItems.map((item) => (
-            <li key={item._id} className="p-4 bg-gray-50 rounded-md border border-gray-100 flex items-center justify-between">
-              <div className="flex justify-between w-full break-all pr-4">
-                <div>
-                  <span className="font-semibold text-gray-700">{item.name}</span><br />
-                  {item.type === 'text' ? (
-                    <span className="text-gray-800">
-                      <span className="font-semibold text-blue-600">[Text]</span> {item.content}
-                    </span>
-                  ) : (
-                    <span className="text-gray-800 flex items-center">
-                      <span className="font-semibold text-teal-600">[File]</span> {item.fileName}
-                    </span>
-                  )}
-                </div>
-                <div className="flex">
-                  {item.type === 'file' && (
-                    <a
-                      href={`http://localhost:5000/${item.filePath}`}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-3 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200 flex items-center"
-                    >Download</a>
-                  )}
-                  {deletingId !== item._id ? (
-                    <button
-                      className="ml-3 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition duration-200 flex items-center"
-                      onClick={() => setDeletingId(item._id)}
-                    >
-                      Delete
-                    </button>
-                  ) : (
-                    <>
+            <li key={item._id} className="p-4 bg-gray-800 rounded-md border border-gray-700 flex items-center justify-between">
+              <div className="flex flex-col gap-2 w-full pr-4">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-xl text-gray-100">{item.name}</span>
+                  <div className="flex">
+                    {item.type === 'file' && (
+                      <a
+                        href={`http://localhost:5000/${item.filePath}`}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-3 px-3 py-1 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200 flex items-center"
+                      >Download</a>
+                    )}
+                    {deletingId !== item._id ? (
                       <button
-                        className="ml-3 px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition duration-200 flex items-center"
-                        onClick={() => handleItemDelete(item._id)}
+                        className="ml-3 px-3 py-1 bg-red-700 text-white text-sm rounded-md hover:bg-red-600 transition duration-200 flex items-center"
+                        onClick={() => setDeletingId(item._id)}
                       >
-                        Yes
+                        Delete
                       </button>
-                      <button
-                        className="ml-3 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition duration-200 flex items-center"
-                        onClick={() => setDeletingId(null)}
-                      >
-                        No
-                      </button>
-                    </>
-                  )}
+                    ) : (
+                      <>
+                        <button
+                          className="ml-3 px-3 py-1 bg-green-700 text-white text-sm rounded-md hover:bg-green-600 transition duration-200 flex items-center"
+                          onClick={() => handleItemDelete(item._id)}
+                        >
+                          Yes
+                        </button>
+                        <button
+                          className="ml-3 px-3 py-1 bg-red-700 text-white text-sm rounded-md hover:bg-red-600 transition duration-200 flex items-center"
+                          onClick={() => setDeletingId(null)}
+                        >
+                          No
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
+                {item.type === 'text' ? (
+                  <div className="mt-1">
+                    <div className="relative mt-1">
+                      <button
+                        className="absolute top-2 right-2 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-500"
+                        onClick={() => navigator.clipboard.writeText(item.content)}
+                      >
+                        Copy
+                      </button>
+                      <pre className="p-2 bg-gray-700 text-gray-100 rounded overflow-auto text-sm whitespace-pre-wrap">
+                        <code>{item.content}</code>
+                      </pre>
+                    </div>
+                  </div>
+                ) : (
+                  <span className="text-gray-300 flex items-center">
+                    {item.fileName}
+                  </span>
+                )}
               </div>
             </li>
           ))}
         </ul>
       )
       }
-    </div >
+    </div>
   );
 }
 
@@ -267,11 +277,11 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
-        <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-500">
-            Content Uploader
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4 font-sans">
+      <div className="bg-gray-900 p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <h1 className="text-4xl font-extrabold text-white mb-8 text-center">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">
+            ShareHole
           </span>
         </h1>
         <Message message={message} />
@@ -284,3 +294,4 @@ const HomePage = () => {
 }
 
 export default HomePage
+
