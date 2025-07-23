@@ -7,7 +7,6 @@ const itemController = require("../controllers/itemController.js");
 router.get("/", itemController.uploaded_items);
 router.post("/text", itemController.text_uploader);
 router.post("/file", upload.single("file"), itemController.file_uploader);
-router.get("/delete/:id", itemController.item_delete_get);
-router.post("/delete/:id", itemController.item_delete_post);
+router.delete("/delete/:id", itemController.item_delete);
 
 module.exports = router;

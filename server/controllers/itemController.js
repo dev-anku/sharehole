@@ -59,27 +59,19 @@ exports.file_uploader = async (req, res) => {
   }
 };
 
-exports.item_delete_get = async (req, res) => {
+exports.item_delete = async (req, res) => {
   try {
-    const item = await Item.find(req.params.id).exec();
-    if (item === null) {
-      res.redirect("/");
+    const item = await Item.findByIdAndDelete(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found." });
     }
-    res.status(200).json(item);
+
+    res
+      .status(200)
+      .json({ success: true, message: "Item deleted successfully." });
   } catch (error) {
     console.error("Error deleting item: ", error);
-    res.status(500).json({ message: "Server error fetching items." });
-  }
-};
-
-exports.item_delete_post = async (req, res) => {
-  try {
-    const item = await Item.find(req.params.id).exec(); 
-
-    await Item.findByIdAndDelete(req.body.id);
-    res.redirect("/");
-  } catch (error) {
-    console.error("Error deleting item: ", error);
-    res.status(500).json({ message: "Server error deleting items." });
+    res.status(500).json({ message: "Server error deleting item." });
   }
 };

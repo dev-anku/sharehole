@@ -147,9 +147,29 @@ const TextUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
   );
 }
 
-const UploadedItemsList = ({ uploadedItems, isLoading }) => {
-  function handleItemDelete() {
-    console.log("Item delete");
+const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, fetchUploadedItems }) => {
+  const [deletingId, setDeletingId] = useState(null);
+
+  async function handleItemDelete(itemId) {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/items/delete/${itemId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Unknown server error." }));
+        throw new Error(`HTTP error! status: ${response.status}. ${errorData.message || ''}`);
+      }
+
+      const result = await response.json();
+      setMessage(result.message || "Item Deleted Successfully!");
+    } catch (error) {
+      console.error("Error deleting the item: ", error);
+    } finally {
+      setLoading(false);
+      fetchUploadedItems();
+    }
   }
 
   return (
@@ -163,36 +183,53 @@ const UploadedItemsList = ({ uploadedItems, isLoading }) => {
         <ul className="space-y-3">
           {uploadedItems.map((item) => (
             <li key={item._id} className="p-4 bg-gray-50 rounded-md border border-gray-100 flex items-center justify-between">
-              <div className="flex-grow break-all pr-4">
-                <span className="font-semibold text-gray-700">{item.name}</span><br />
-                {item.type === 'text' ? (
-                  <span className="text-gray-800">
-                    <span className="font-semibold text-blue-600">[Text]</span> {item.content}
-                  </span>
-                ) : (
-                  <span className="text-gray-800 flex justify-between items-center">
-                    <span>
+              <div className="flex justify-between w-full break-all pr-4">
+                <div>
+                  <span className="font-semibold text-gray-700">{item.name}</span><br />
+                  {item.type === 'text' ? (
+                    <span className="text-gray-800">
+                      <span className="font-semibold text-blue-600">[Text]</span> {item.content}
+                    </span>
+                  ) : (
+                    <span className="text-gray-800 flex items-center">
                       <span className="font-semibold text-teal-600">[File]</span> {item.fileName}
                     </span>
-                    {/* Add download link for files */}
-                  </span>
-                )}
-                {item.type === 'file' && (
-                  <a
-                    href={`http://localhost:5000/${item.filePath}`} // Construct the full URL to the file
-                    download // The 'download' attribute prompts the browser to download the file
-                  >
-                    <button
+                  )}
+                </div>
+                <div className="flex">
+                  {item.type === 'file' && (
+                    <a
+                      href={`http://localhost:5000/${item.filePath}`}
                       download
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="ml-3 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200 flex items-center"
+                    >Download</a>
+                  )}
+                  {deletingId !== item._id ? (
+                    <button
+                      className="ml-3 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition duration-200 flex items-center"
+                      onClick={() => setDeletingId(item._id)}
                     >
-                      Download
+                      Delete
                     </button>
-                  </a>
-                )}
-                < button className="ml-3 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-blue-600 transition duration-200 flex items-center" onClick={handleItemDelete}>
-                  Delete
-                </button>
+                  ) : (
+                    <>
+                      <button
+                        className="ml-3 px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition duration-200 flex items-center"
+                        onClick={() => handleItemDelete(item._id)}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        className="ml-3 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition duration-200 flex items-center"
+                        onClick={() => setDeletingId(null)}
+                      >
+                        No
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </li>
           ))}
@@ -240,7 +277,7 @@ const HomePage = () => {
         <Message message={message} />
         <TextUpload setMessage={setMessage} isLoading={isLoading} setLoading={setLoading} fetchUploadedItems={fetchUploadedItems} />
         <FileUpload setMessage={setMessage} isLoading={isLoading} setLoading={setLoading} fetchUploadedItems={fetchUploadedItems} />
-        <UploadedItemsList uploadedItems={uploadedItems} isLoading={isLoading} />
+        <UploadedItemsList uploadedItems={uploadedItems} setMessage={setMessage} isLoading={isLoading} setLoading={setLoading} fetchUploadedItems={fetchUploadedItems} />
       </div>
     </div>
   )
