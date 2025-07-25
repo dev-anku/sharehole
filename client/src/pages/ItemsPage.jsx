@@ -31,6 +31,7 @@ const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
     try {
       const response = await fetch('http://localhost:5000/api/items/file', {
         method: 'POST',
+        credentials: "include",
         body: formData,
       });
 
@@ -99,6 +100,7 @@ const TextUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ name: textName, content: textContent }),
       });
 
@@ -255,10 +257,31 @@ const HomePage = () => {
   const [uploadedItems, setUploadedItems] = useState([]);
   const [message, setMessage] = useState("");
 
+  async function handleLogout() {
+    try {
+      const res = await fetch("http://localhost:5000/api/user/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = "/login";
+      } else {
+        setMessage("Logout failed.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      setMessage("An error occurred during logout.");
+    }
+  }
+
   async function fetchUploadedItems() {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/items");
+      const response = await fetch("http://localhost:5000/api/items", {
+        method: "GET",
+        credentials: "include",
+      });
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: "Unknow server error." }));
         throw new Error(`HTTP error! status: ${response.status}. ${errorData.message || ''}`);
@@ -278,6 +301,12 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4 font-sans">
+      <button
+        onClick={handleLogout}
+        className="absolute top-4 right-4 px-4 py-2 bg-gradient-to-r from-red-700 to-pink-700 text-white text-sm font-semibold rounded-md shadow-lg hover:from-red-600 hover:to-pink-600 transition duration-300 z-50"
+      >
+        Logout
+      </button>
       <div className="bg-gray-900 p-8 rounded-lg shadow-xl w-full max-w-4xl">
         <h1 className="text-4xl font-extrabold text-white mb-8 text-center">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">

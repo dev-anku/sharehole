@@ -2,41 +2,49 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config();
-
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+require("dotenv").config();
 
 const itemRouter = require("./routes/items.js");
 const userRouter = require("./routes/users.js");
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
+app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/api/items", itemRouter);
-app.use("/api/user", userRouter);
 
 mongoose.set("strictQuery", false);
 const mongoDB = process.env.DB_URL;
 
-main().catch((err) => console.log(err));
-async function main() {
-  await mongoose.connect(mongoDB);
-}
+mongoose.connect(mongoDB).then(() => {
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      store: MongoStore.create({ mongoUrl: mongoDB }),
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: null,
+      },
+    }),
+  );
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: mongoDB }),
-    cookie: {
-      maxAge: null,
-    },
-  }),
-);
+  app.use("/api/items", itemRouter);
+  app.use("/api/user", userRouter);
+
+}).catch((err) => {
+  console.error(err);
+});
 
 module.exports = app;

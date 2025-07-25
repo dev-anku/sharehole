@@ -2,7 +2,9 @@ const Item = require("../models/item.js");
 
 exports.uploaded_items = async (req, res) => {
   try {
-    const items = await Item.find().sort({ uploadedAt: -1 });
+    const items = await Item.find({ user: req.session.userId }).sort({
+      uploadedAt: -1,
+    });
     res.status(200).json(items);
   } catch (error) {
     console.error("Error fetching items: ", error);
@@ -22,6 +24,7 @@ exports.text_uploader = async (req, res) => {
       type: "text",
       name,
       content,
+      user: req.session.userId,
     });
 
     await newItem.save();
@@ -45,6 +48,7 @@ exports.file_uploader = async (req, res) => {
     const newItem = new Item({
       type: "file",
       name,
+      user: req.session.userId,
       fileName: req.file.originalname,
       filePath: req.file.path,
     });
