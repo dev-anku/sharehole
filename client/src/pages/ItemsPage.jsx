@@ -157,6 +157,7 @@ const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, f
     try {
       const response = await fetch(`http://localhost:5000/api/items/delete/${itemId}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!response.ok) {

@@ -32,6 +32,11 @@ const Register = () => {
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4 font-sans">
       <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded-lg shadow-xl w-full max-w-md">
         <h1 className="text-3xl font-bold text-white mb-6 text-center">Register</h1>
+        <div className={"p-3 mb-4 rounded-md text-center bg-red-800 text-red-100"}>
+          Don't forget your username or password as there is no way to reset it.
+          <p className="underline"><a href="https://github.com/dev-anku/sharehole" target="_blank">More information</a></p>
+        </div>
+
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <input
           type="text"
