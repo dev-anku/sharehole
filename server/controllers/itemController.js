@@ -33,10 +33,6 @@ exports.text_uploader = asyncHandler(async (req, res, next) => {
 exports.file_uploader = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
 
-  console.log("Incoming file:", req.file);
-  console.log("Incoming user ID:", req.session.userId);
-  console.log("Name:", name);
-
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded." });
   }
@@ -46,7 +42,7 @@ exports.file_uploader = asyncHandler(async (req, res, next) => {
     name,
     user: req.session.userId,
     fileName: req.file.originalname,
-    publicId: req.file.public_id,
+    publicId: req.file.filename,
     filePath: req.file.path,
   });
 
