@@ -193,7 +193,7 @@ const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, f
                   <div className="flex">
                     {item.type === 'file' && (
                       <a
-                        href={`${import.meta.env.VITE_API_URL}/${item.filePath}`}
+                        href={item.filePath}
                         download
                         target="_blank"
                         rel="noopener noreferrer"
