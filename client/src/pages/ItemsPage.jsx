@@ -193,7 +193,7 @@ const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, f
                   <div className="flex">
                     {item.type === 'file' && (
                       <a
-                        href={item.filePath}
+                        href={item.filePath.replace('/upload/', '/upload/fl_attachment/')}
                         download
                         target="_blank"
                         rel="noopener noreferrer"
