@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 
 const Message = ({ message }) => {
   return (
@@ -254,6 +255,7 @@ const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, f
 }
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [uploadedItems, setUploadedItems] = useState([]);
   const [message, setMessage] = useState("");
@@ -266,7 +268,7 @@ const HomePage = () => {
       });
       const data = await res.json();
       if (data.success) {
-        window.location.href = "/login";
+        navigate("/login");
       } else {
         setMessage("Logout failed.");
       }

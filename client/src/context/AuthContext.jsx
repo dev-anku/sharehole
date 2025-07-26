@@ -7,21 +7,41 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/user`, {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => { if (data && data._id) setUser(data); else setUser(null); })
-      .catch(() => { })
-      .finally(() => setLoading(false));
+    const fetchSession = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user`, {
+          credentials: "include",
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data._id) setUser(data);
+          else setUser(null);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("Session fetch failed:", err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSession();
   }, []);
 
-  async function logout() {
-    await fetch(`${import.meta.env.VITE_API_URL}/api/user/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    setUser(null);
+  const logout = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (res.ok) setUser(null);
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   return (
@@ -32,3 +52,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+

@@ -8,25 +8,33 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      setUser(data);
-      navigate("/");
-    } else {
-      const err = await res.json().catch(() => { });
-      setError(err.message || "Login failed");
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+        navigate("/");
+      } else {
+        const err = await res.json().catch(() => null);
+        setError(err?.message || "Login failed");
+      }
+    } catch (err) {
+      setError("Network error: ", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,9 +59,14 @@ const Login = () => {
         />
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-teal-700 to-green-800 text-white py-3 px-6 rounded-md shadow-lg hover:from-teal-600 hover:to-green-700"
+          disabled={loading}
+          className={`w-full text-white py-3 px-6 rounded-md shadow-lg 
+    ${loading
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-gradient-to-r from-teal-700 to-green-800 hover:from-teal-600 hover:to-green-700"
+            }`}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
         <p className="text-gray-400 text-sm mt-4 text-center">
           Don't have an account? <Link to="/register" className="text-blue-400 hover:underline">Register</Link>

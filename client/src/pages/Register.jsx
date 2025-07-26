@@ -8,32 +8,40 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (username.toLowerCase().includes("ankit") || username.toLowerCase().includes("mehul")) {
-      navigate("/chooseotherusername");
-      return;
-    }
-    const usernamePattern = /^[a-zA-Z0-9]+$/;
-    if (!usernamePattern.test(username)) {
-      setError("Username should only contain alphanumeric characters");
-      return;
-    }
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ username, password }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setUser(data);
-      navigate("/");
-    } else {
-      const err = await res.json().catch(() => ({}));
-      setError(err.message || "Registration failed");
+    setLoading(true);
+    try {
+      if (username.toLowerCase().includes("ankit") || username.toLowerCase().includes("mehul")) {
+        navigate("/chooseotherusername");
+        return;
+      }
+      const usernamePattern = /^[a-zA-Z0-9]+$/;
+      if (!usernamePattern.test(username)) {
+        setError("Username should only contain alphanumeric characters");
+        return;
+      }
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+        navigate("/");
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setError(err.message || "Registration failed");
+      }
+    } catch (err) {
+      setError("Network error: ", err);
+    } finally {
+      setLoading(false);
     }
   };
 
