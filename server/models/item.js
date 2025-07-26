@@ -17,6 +17,12 @@ const ItemSchema = new Schema({
       return this.type === "file";
     },
   },
+  publicId: {
+    type: String,
+    required: function () {
+      return this.type === "file";
+    },
+  },
   filePath: {
     type: String,
     required: function () {

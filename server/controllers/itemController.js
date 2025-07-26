@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const path = require("path");
-const fs = require("fs");
+const cloudinary = require("../config/cloudinary.js");
 const Item = require("../models/item.js");
 
 exports.uploaded_items = asyncHandler(async (req, res, next) => {
@@ -42,6 +42,7 @@ exports.file_uploader = asyncHandler(async (req, res, next) => {
     name,
     user: req.session.userId,
     fileName: req.file.originalname,
+    publicId: req.file.public_id,
     filePath: req.file.path,
   });
 
@@ -57,10 +58,14 @@ exports.item_delete = asyncHandler(async (req, res, next) => {
     return res.status(404).json({ message: "Item not found." });
   }
 
-  if (item.type === "file") {
-    fs.unlink(item.filePath, (err) => {
-      if (err) console.error("Error deleting file: ", err);
-    });
+  if (item.type === "file" && item.publicId) {
+    try {
+      await cloudinary.uploader.destroy(item.publicId, {
+        resource_type: "auto",
+      });
+    } catch (err) {
+      console.error("Cloudinary deletion error:", err);
+    }
   }
 
   await item.deleteOne();
