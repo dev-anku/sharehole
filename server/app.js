@@ -1,4 +1,7 @@
 const express = require("express");
+const createError = require("http-errors");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
@@ -18,8 +21,10 @@ app.use(
   }),
 );
 
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.set("trust proxy", 1);
 
@@ -44,8 +49,7 @@ mongoose
         cookie: {
           httpOnly: true,
           secure: true,
-          sameSite: "lax",
-          maxAge: null,
+          sameSite: "None",
         },
       }),
     );
@@ -56,5 +60,17 @@ mongoose
   .catch((err) => {
     console.error(err);
   });
+
+app.use(function (req, res, next) {
+  next(createError(404));
+});
+
+app.use(function (err, req, res, next) {
+  res.locals.message = err.message;
+  res.locals.error = req.app.get("env") === "development" ? err : {};
+
+  res.status(err.status || 500);
+  res.json({ error: err.message });
+});
 
 module.exports = app;
