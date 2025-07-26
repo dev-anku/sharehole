@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const Item = require("../models/item.js");
 
 exports.uploaded_items = async (req, res) => {
@@ -65,12 +67,18 @@ exports.file_uploader = async (req, res) => {
 
 exports.item_delete = async (req, res) => {
   try {
-    const item = await Item.findByIdAndDelete(req.params.id);
-
+    const item = await Item.findById(req.params.id);
     if (!item) {
       return res.status(404).json({ message: "Item not found." });
     }
 
+    if (item.type === "file") {
+      fs.unlink(item.filePath, (err) => {
+        if (err) console.error("Error deleting file: ", err);
+      });
+    }
+
+    await item.deleteOne();
     res
       .status(200)
       .json({ success: true, message: "Item deleted successfully." });

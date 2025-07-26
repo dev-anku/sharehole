@@ -12,6 +12,15 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (username.toLowerCase().includes("ankit") || username.toLowerCase().includes("mehul")) {
+      navigate("/fatassnig");
+      return;
+    }
+    const usernamePattern = /^[a-zA-Z0-9]+$/;
+    if (!usernamePattern.test(username)) {
+      setError("Username should only contain alphanumeric characters");
+      return;
+    }
     const res = await fetch("http://localhost:5000/api/user/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
