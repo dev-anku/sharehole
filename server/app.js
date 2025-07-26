@@ -19,33 +19,42 @@ app.use(
 );
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.set("trust proxy", 1);
 
 mongoose.set("strictQuery", false);
 const mongoDB = process.env.DB_URL;
 
-mongoose.connect(mongoDB).then(() => {
-  app.set("trust proxy", 1);
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({ mongoUrl: mongoDB }),
-      cookie: {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        maxAge: null,
-      },
-    }),
-  );
+mongoose
+  .connect(mongoDB)
+  .then(() => {
+    app.use(
+      session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
+          mongoUrl: mongoDB,
+          collectionName: "sessions",
+          ttl: 14 * 24 * 60 * 60,
+          autoRemove: "interval",
+          autoRemoveInterval: 10,
+        }),
+        cookie: {
+          httpOnly: true,
+          secure: true,
+          sameSite: "lax",
+          maxAge: null,
+        },
+      }),
+    );
 
-  app.use("/api/items", itemRouter);
-  app.use("/api/user", userRouter);
-
-}).catch((err) => {
-  console.error(err);
-});
+    app.use("/api/items", itemRouter);
+    app.use("/api/user", userRouter);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
 
 module.exports = app;
