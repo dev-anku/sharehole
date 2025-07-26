@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ItemPage from "./pages/ItemsPage";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import ChooseOtherUsername from "./pages/ChooseOtherUsername.jsx";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
           <Route path="/" element={<ProtectedRoute><ItemPage /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/chooseotherusername" element={<ChooseOtherUsername />} />
         </Routes>
       </Router>
     </AuthProvider>

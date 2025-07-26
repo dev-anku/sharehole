@@ -29,7 +29,7 @@ const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
     formData.append('file', selectedFile);
 
     try {
-      const response = await fetch('http://localhost:5000/api/items/file', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/items/file`, {
         method: 'POST',
         credentials: "include",
         body: formData,
@@ -48,7 +48,7 @@ const FileUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
       fetchUploadedItems();
     } catch (error) {
       console.error("Error uploading file: ", error);
-      setMessage('Failed to upload file. Please ensure the backend server is running and accessible at http://localhost:5000.');
+      setMessage('Failed to upload file.');
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ const TextUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
     setLoading(true);
     setMessage('');
     try {
-      const response = await fetch("http://localhost:5000/api/items/text", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/items/text`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -116,7 +116,7 @@ const TextUpload = ({ setMessage, isLoading, setLoading, fetchUploadedItems }) =
       fetchUploadedItems();
     } catch (error) {
       console.error("Error Uploading Text: ", error);
-      setMessage('Failed to upload text. Please ensure the backend server is running and accessible at http://localhost:5000.');
+      setMessage('Failed to upload text.');
     } finally {
       setLoading(false);
     }
@@ -155,7 +155,7 @@ const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, f
   async function handleItemDelete(itemId) {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/items/delete/${itemId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/items/delete/${itemId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -192,7 +192,7 @@ const UploadedItemsList = ({ uploadedItems, setMessage, isLoading, setLoading, f
                   <div className="flex">
                     {item.type === 'file' && (
                       <a
-                        href={`http://localhost:5000/${item.filePath}`}
+                        href={`${import.meta.env.VITE_API_URL}/${item.filePath}`}
                         download
                         target="_blank"
                         rel="noopener noreferrer"
@@ -260,7 +260,7 @@ const HomePage = () => {
 
   async function handleLogout() {
     try {
-      const res = await fetch("http://localhost:5000/api/user/logout", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -279,7 +279,7 @@ const HomePage = () => {
   async function fetchUploadedItems() {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/items", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/items`, {
         method: "GET",
         credentials: "include",
       });

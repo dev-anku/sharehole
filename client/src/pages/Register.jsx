@@ -13,7 +13,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
     if (username.toLowerCase().includes("ankit") || username.toLowerCase().includes("mehul")) {
-      navigate("/fatassnig");
+      navigate("/chooseotherusername");
       return;
     }
     const usernamePattern = /^[a-zA-Z0-9]+$/;
@@ -21,7 +21,7 @@ const Register = () => {
       setError("Username should only contain alphanumeric characters");
       return;
     }
-    const res = await fetch("http://localhost:5000/api/user/register", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
