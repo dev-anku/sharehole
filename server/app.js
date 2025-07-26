@@ -25,6 +25,7 @@ mongoose.set("strictQuery", false);
 const mongoDB = process.env.DB_URL;
 
 mongoose.connect(mongoDB).then(() => {
+  app.set("trust proxy", 1);
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
@@ -33,7 +34,7 @@ mongoose.connect(mongoDB).then(() => {
       store: MongoStore.create({ mongoUrl: mongoDB }),
       cookie: {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "lax",
         maxAge: null,
       },
