@@ -30,8 +30,16 @@ exports.text_uploader = asyncHandler(async (req, res, next) => {
     .json({ message: "Text uploaded successfully!", item: newItem });
 });
 
+function getResourceTypeFromMime(mimetype) {
+  if (mimetype.startsWith("image/")) return "image";
+  if (mimetype.startsWith("video/")) return "video";
+  return "raw"; // for PDFs, zips, docs, etc.
+}
+
 exports.file_uploader = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
+
+  const resourceType = getResourceTypeFromMime(req.file.mimetype);
 
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded." });
@@ -43,6 +51,7 @@ exports.file_uploader = asyncHandler(async (req, res, next) => {
     user: req.session.userId,
     fileName: req.file.originalname,
     publicId: req.file.filename,
+    resourceType,
     filePath: req.file.path,
   });
 
@@ -61,7 +70,7 @@ exports.item_delete = asyncHandler(async (req, res, next) => {
   if (item.type === "file" && item.publicId) {
     try {
       await cloudinary.uploader.destroy(item.publicId, {
-        resource_type: "auto",
+        resource_type: item.resourceType,
       });
     } catch (err) {
       console.error("Cloudinary deletion error:", err);

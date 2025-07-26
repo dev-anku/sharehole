@@ -23,6 +23,12 @@ const ItemSchema = new Schema({
       return this.type === "file";
     },
   },
+  resourceType: {
+    type: String,
+    required: function () {
+      return this.type === "file";
+    },
+  },
   filePath: {
     type: String,
     required: function () {
